@@ -16,3 +16,8 @@ window.onload = async function () {
     Router.StartTrigger();
 
 }
+
+window.addEventListener('routerChange', function (e) {
+    const details = e.detail;
+    if (typeof InitializePage === 'function') { InitializePage(details); }
+})
