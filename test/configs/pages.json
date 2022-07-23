@@ -1,0 +1,16 @@
+[
+    {
+        "root": true,
+        "route": "/inicio",
+        "path": "/pages/home"
+    },
+    {
+        "route": "/sobre",
+        "title": "Página Sobre",
+        "path": "/pages/about"
+    },
+    {
+        "route": "/login",
+        "path": "/pages/login"
+    }
+]
