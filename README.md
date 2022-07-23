@@ -135,3 +135,17 @@ Caso seja necessário, você pode importar um arquivo _JSON_ contendo uma _array
     ]
 
 ````
+
+## EventListener
+É possível detectar quando uma rota foi alterada e processada pelo roteamento, basta definir:
+
+````js
+
+    window.addEventListener('routerChange', function (e) {
+        const details = e.detail;
+        console.log('detalhes', details);
+    })
+
+````
+
+Dentro de **detail** você tem as informações da rota acessada e um _object_ com todos os parâmetros recebidos pela URL.
