@@ -6,7 +6,7 @@ Mesma eficiência do _HashRouter_ do _React_, mas no VanillaJS.
 
 > **Desenvolvedor**: Leonardo Valcarenghi
 > <br/>
-> **Versão**: 1.0
+> **Versão**: 1.0 _beta_
 > <br/>
 > [Site do Desenvolvedor](https://leonardovalcarenghi.com.br)
 
