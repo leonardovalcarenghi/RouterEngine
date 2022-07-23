@@ -22,15 +22,14 @@ Instancie o **RouterEngine** globalmente em seu projeto, de preferência no _mai
 ````
 
 ## Adicionar Rotas
-Para adicionar uma rota de rastreio use o seguinte comando:
+Para adicionar uma rota de rastreio use o método **Add**, informando a URL da rota e uma função de _callBack_.
 
 ````js
 
-    function callback(e) { 
+    Router.Add('/pagina', (e) => {
         // função de callback será chamada quando o navegador acessar a página adicionada para roteamento.
-    }
+    });
 
-    Router.Add('/pagina', callback);
 
 ````
 
@@ -42,11 +41,9 @@ Ele será usado quando não houver _hashs_ na url.
 
 ````js
 
-    function callback(e) { 
+    Router.SetRoot('/pagina', (e) => {
         // função de callback será chamada quando o navegador carregar a hash #inicio ou a index do site.
-    }
-
-    Router.SetRoot('/inicio', callback);
+    });
 
 ````
 
@@ -61,6 +58,8 @@ Você pode usar o método  **SetTitle** para definir um título de página para 
     Router.SetTitle('/sobre', 'Página Sobre');
 
 ````
+
+> Defini um título somente depois de adicionar uma rota!
 
 ## Iniciar Roteamento
 Use o método  **Start** após configurar as rotas para iniciar o serviço de roteamento em seu site.

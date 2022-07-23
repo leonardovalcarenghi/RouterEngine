@@ -16,6 +16,8 @@
 
     var NotFoundCallback;
 
+    var OnChangeCallback;
+
     function RouterEngine() {
 
         return this;
@@ -63,8 +65,12 @@
         Render = object
     };
 
+    // Definir callback de 'onChange':
+    RouterEngine.prototype.OnChange = function (callback) {
+        OnChangeCallback = typeof callback === 'function' ? callback : null;
+    };
 
-    // Definir Callback para erro 404>
+    // Definir Callback para erro 404:
     RouterEngine.prototype.NotFound = function (callback) {
         NotFoundCallback = typeof callback === 'function' ? callback : null;
     };
@@ -80,6 +86,8 @@
             this._setTitle(firstHash);
             this._callCallback(firstHash);
             this._callEventListener(firstHash);
+
+
 
         } else {
             await this._renderPage(Root);
@@ -184,6 +192,10 @@
         const route = Routes.find(ROUTE => ROUTE.route == hash);
         const parameters = this._getUrlParams();
         const details = { route, hash, parameters };
+
+
+        // OnChange:
+        if (OnChangeCallback) { OnChangeCallback(details); }
 
         // Event Listener:
         const event = new CustomEvent('routerChange', { detail: details });

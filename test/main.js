@@ -6,7 +6,6 @@ window.onload = async function () {
 
     const container = document.getElementById("root");
 
-
     Router.SetRoot('/inicio', async function (e) {
         console.log('Página Inicial');
         container.innerHTML = '<h1>Página Inicial - root</h1>';
@@ -18,8 +17,12 @@ window.onload = async function () {
     });
 
     Router.NotFound(function (e) {
-        console.error('erro 404');
-    })
+        console.error('Página não foi encontrada.');
+    });
+
+    Router.OnChange(function (e) {
+        console.log('Rota Navegada.', e);
+    });
 
     Router.Start();
 
