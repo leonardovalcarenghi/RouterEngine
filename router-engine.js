@@ -1,0 +1,218 @@
+; (function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.RouterEngine = factory()
+}(this, (function () {
+
+    var Routes = [
+        {
+            route: '',
+            callBack: null,
+            root: false
+        }
+    ];
+
+    var Root;
+
+    var Render;
+
+    function RouterEngine() {
+
+        return this;
+    }
+
+    // Adicionar Rota:
+    RouterEngine.prototype.Add = function (route, callBack) {
+        route = this._trimSlashes(route);
+        Routes.push({ route, callBack });
+    };
+
+    // Definir Root:
+    RouterEngine.prototype.SetRoot = function (route, callBack) {
+        route = this._trimSlashes(route);
+        Root = route;
+        this.Add(route, callBack);
+    };
+
+    // Definir ouvinte para uma rota específica:
+    RouterEngine.prototype.SetListener = function (url, callBack) {
+        url = this._trimSlashes(url);
+        const route = Routes.find(r => r.route == url);
+        route.callBack = callBack;
+    }
+
+    // Definir título da página:
+    RouterEngine.prototype.SetTitle = function (title) {
+        document.getElementsByTagName('title')[0].innerHTML = title || '';
+    };
+
+    // Navegar para uma página (hash) específica:
+    RouterEngine.prototype.NavigateTo = function (path) {
+        path = this._trimSlashes(path);
+        window.location.hash = path;
+    };
+
+    // Definir RenderEngine:
+    RouterEngine.prototype.SetRenderEngine = function (object) {
+        Render = object
+    };
+
+    // Iniciar escuta de hash:
+    RouterEngine.prototype.StartTrigger = async function () {
+        const _this = this;
+
+        // Primeira Hash ou Root:
+        const firstHash = this._getHash();
+        if (firstHash) {
+            await this._renderPage(firstHash);
+            this._setTitle(firstHash);
+            this._callCallback(firstHash);
+            this._callEventListener(firstHash);
+
+        } else {
+            await this._renderPage(firstHash);
+            this._setTitle(firstHash);
+            this._callCallback(Root);
+            this._callEventListener(firstHash);
+        }
+
+        // Iniciar Trigger:
+        window.onhashchange = async function () {
+
+            const hash = _this._getHash();
+            if (hash) {
+                await _this._renderPage(hash);
+                _this._setTitle(hash);
+                _this._callCallback(hash);
+            }
+
+            _this._callEventListener(hash);
+
+        }
+
+        return this;
+    };
+
+    // Carregar rotas de um arquivo JSON:
+    RouterEngine.prototype.LoadRoutesFromFile = async function (url) {
+        const file = await this._get(url);
+        try {
+            const routesFromfile = JSON.parse(file);
+            if (Array.isArray(routesFromfile)) {
+
+                routesFromfile.forEach(R => {
+                    R.route = this._trimSlashes(R.route);
+                })
+                Routes = routesFromfile;
+
+                const root = Routes.find(r => r.root == true);
+                Root = root.route || null;
+
+            } else {
+                throw 'Arquivo JSON não contém uma Array de rotas válida.';
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    };
+
+    // ------------------------------------------------------------------------------------------------------------------ //
+
+
+    // Obter hash atual:
+    RouterEngine.prototype._getHash = function () {
+        const hash = window.location.hash.substr(1).replace(/(\?.*)$/, "");
+        return this._trimSlashes(hash);
+    };
+
+    // Obter rota:
+    RouterEngine.prototype._getRoute = function (hash) {
+        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        return route || null;
+    };
+
+
+    // Renderizar página com 
+    RouterEngine.prototype._renderPage = async function (hash) {
+        const route = this._getRoute(hash);
+        if (Render) { await Render.Page(route.path); }
+    };
+
+
+
+    // Chamar evento de callback definida para a rota:
+    RouterEngine.prototype._callCallback = function (hash) {
+        hash = this._trimSlashes(hash);
+        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        if (route) {
+            if (typeof route.callBack === 'function') { route.callBack(); }
+        }
+    };
+
+    // Chamar evento de escuta definido pelo desenvolvedor:
+    RouterEngine.prototype._callEventListener = function (hash) {
+
+        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        const parameters = this._getUrlParams();
+        const details = { route, hash, parameters };
+
+        // Event Listener:
+        const event = new CustomEvent('routerChange', { detail: details });
+        window.dispatchEvent(event);
+
+        // OnEvent:
+        if (typeof window['onRouterChange'] === 'function') { window.onRouterChange(details); }
+
+    };
+
+    // Obter parâmetros recebidos pela URL:
+    RouterEngine.prototype._getUrlParams = function () {
+        let href = window.location.href;
+        let index = href.indexOf('?');
+        if (index == -1) { return null; }
+        href = href.substr(index + 1, href.length);
+        let parameters = href.split('&');
+        var params = {};
+        parameters.forEach(P => {
+            const key = P.split('=')[0];
+            const value = P.split('=')[1];
+            params[key] = value;
+        });
+        return params;
+    }
+
+    // Definir título da página pela rota (se disponível):
+    RouterEngine.prototype._setTitle = function (hash) {
+        hash = this._trimSlashes(hash);
+        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        if (route) {
+            const title = route.title;
+            document.getElementsByTagName('title')[0].innerHTML = title || '';
+        }
+    };
+
+    // Trim slashes for path
+    RouterEngine.prototype._trimSlashes = function (path) {
+        if (typeof path !== "string") { return ""; }
+        return path.toString().replace(/\/$/, "").replace(/^\//, "");
+    };
+
+    // Requisição GET:
+    RouterEngine.prototype._get = function (url) {
+        return new Promise((resolve, reject) => {
+            const req = new XMLHttpRequest();
+            req.open('GET', url, true);
+            req.send(null);
+            req.onload = () => {
+                if (req.status == 404) {
+                    reject(null);
+                } else {
+                    resolve(req.responseText);
+                }
+            }
+            req.onerror = () => { reject(null); }
+        });
+    };
+
+    return RouterEngine;
+
+})));
