@@ -63,11 +63,11 @@ Você pode usar o método  **SetTitle** para definir um título de página para 
 ````
 
 ## Iniciar Roteamento
-Use o método  **StartTrigger** após configurar as rotas para iniciar o serviço de roteamento em seu site.
+Use o método  **Start** após configurar as rotas para iniciar o serviço de roteamento em seu site.
 
 ````js
 
-    Router.StartTrigger();
+    Router.Start();
 
 ````
 
@@ -88,6 +88,16 @@ Após iniciar o roteamento, você pode navegar entre páginas usando o método *
 
 ````
 
+## Rota não Encontrada
+Caso o usuário acesse ou seja redirecionado para uma rota não mapeada, você pode captar isso através do método **NotFound**.
+
+````js
+
+    Router.NotFound((e) => {
+        console.error('Erro 404');
+    });
+
+````
 
 ## Definir Callback
 Caso você tenha adicionado uma rota ao roteamento sem callback ou quer modificar um callback atribuido em uma rota, use o método **SetListener**. 
@@ -122,7 +132,7 @@ Caso seja necessário, você pode importar um arquivo _JSON_ contendo uma _array
 
     [
         {
-            "root": true,           // defini que a rota "/inicio" é a principal (root).
+            "root": true,           // define que a rota "/inicio" é a principal (root).
             "route": "/inicio",     // rota
             "title": "Início"       // texto para atribuir como título da página no navegador.
         },

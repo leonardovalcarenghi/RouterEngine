@@ -14,7 +14,7 @@
 
     var Render;
 
-    var Error404Callback;
+    var NotFoundCallback;
 
     function RouterEngine() {
 
@@ -65,8 +65,8 @@
 
 
     // Definir Callback para erro 404>
-    RouterEngine.prototype.Error404 = function (callback) {
-        Error404Callback = typeof callback === 'function' ? callback : null;
+    RouterEngine.prototype.NotFound = function (callback) {
+        NotFoundCallback = typeof callback === 'function' ? callback : null;
     };
 
     // Iniciar escuta de hash:
@@ -102,7 +102,7 @@
                     _this._callEventListener(hash);
                 } else {
 
-                    if (Error404Callback) { Error404Callback(); }
+                    if (NotFoundCallback) { NotFoundCallback(); }
 
                 }
 

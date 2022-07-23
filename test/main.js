@@ -17,7 +17,7 @@ window.onload = async function () {
         container.innerHTML = '<h1>Sobre</h1>';
     });
 
-    Router.Error404(function (e) {
+    Router.NotFound(function (e) {
         console.error('erro 404');
     })
 
