@@ -53,14 +53,12 @@ Ele será usado quando não houver _hashs_ na url.
 >  Não utilize no **SetRoot** apenas uma "/", isso pode confundir o módulo.
  
 
-## Definindo Título da Página
-Você pode usar o método  **SetTitle** para definir um título na página quando for acessada.
+## Definindo Título
+Você pode usar o método  **SetTitle** para definir um título de página para uma rota.
 
 ````js
 
-    Router.Add('/sobre', function (e) {
-        Router.SetTitle('Página Sobre');
-    });
+    Router.SetTitle('/sobre', 'Página Sobre');
 
 ````
 

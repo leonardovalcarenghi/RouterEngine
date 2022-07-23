@@ -22,26 +22,32 @@
     // Adicionar Rota:
     RouterEngine.prototype.Add = function (route, callBack) {
         route = this._trimSlashes(route);
+        if (!route) { throw '[Add] Não é possível adicionar uma rota vázia.' }
         Routes.push({ route, callBack });
     };
 
     // Definir Root:
     RouterEngine.prototype.SetRoot = function (route, callBack) {
         route = this._trimSlashes(route);
+        if (!route) { throw '[SetRoot] Não é possível adicionar uma rota vázia como root.' }
         Root = route;
         this.Add(route, callBack);
     };
 
     // Definir ouvinte para uma rota específica:
-    RouterEngine.prototype.SetListener = function (url, callBack) {
-        url = this._trimSlashes(url);
-        const route = Routes.find(r => r.route == url);
+    RouterEngine.prototype.SetListener = function (hash, callBack) {
+        hash = this._trimSlashes(hash);
+        const route = this._getRoute(hash);
+        if (!route) { throw '[SetListener] Não foi encontrado nenhuma rota definida para essa hash.' }
         route.callBack = callBack;
     }
 
     // Definir título da página:
-    RouterEngine.prototype.SetTitle = function (title) {
-        document.getElementsByTagName('title')[0].innerHTML = title || '';
+    RouterEngine.prototype.SetTitle = function (hash, title) {
+        hash = this._trimSlashes(hash);
+        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        if (!route) { throw '[SetTitle] Não foi encontrado nenhuma rota definida para essa hash.' }
+        route.title = title || '';
     };
 
     // Navegar para uma página (hash) específica:
