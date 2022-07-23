@@ -14,6 +14,8 @@
 
     var Render;
 
+    var Error404Callback;
+
     function RouterEngine() {
 
         return this;
@@ -61,8 +63,14 @@
         Render = object
     };
 
+
+    // Definir Callback para erro 404>
+    RouterEngine.prototype.Error404 = function (callback) {
+        Error404Callback = typeof callback === 'function' ? callback : null;
+    };
+
     // Iniciar escuta de hash:
-    RouterEngine.prototype.StartTrigger = async function () {
+    RouterEngine.prototype.Start = async function () {
         const _this = this;
 
         // Primeira Hash ou Root:
@@ -74,10 +82,10 @@
             this._callEventListener(firstHash);
 
         } else {
-            await this._renderPage(firstHash);
-            this._setTitle(firstHash);
+            await this._renderPage(Root);
+            this._setTitle(Root);
             this._callCallback(Root);
-            this._callEventListener(firstHash);
+            this._callEventListener(Root);
         }
 
         // Iniciar Trigger:
@@ -85,12 +93,28 @@
 
             const hash = _this._getHash();
             if (hash) {
-                await _this._renderPage(hash);
-                _this._setTitle(hash);
-                _this._callCallback(hash);
+
+                const route = _this._getRoute(hash);
+                if (route) {
+                    await _this._renderPage(hash);
+                    _this._setTitle(hash);
+                    _this._callCallback(hash);
+                    _this._callEventListener(hash);
+                } else {
+
+                    if (Error404Callback) { Error404Callback(); }
+
+                }
+
+
+            } else {
+                await _this._renderPage(Root);
+                _this._setTitle(Root);
+                _this._callCallback(Root);
+                _this._callEventListener(Root);
             }
 
-            _this._callEventListener(hash);
+
 
         }
 
