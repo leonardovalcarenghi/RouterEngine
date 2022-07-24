@@ -27,11 +27,23 @@ Para adicionar uma rota de rastreio use o método **Add**, informando a URL da r
 ````js
 
     Router.Add('/pagina', (e) => {
-        // função de callback será chamada quando o navegador acessar a página adicionada para roteamento.
+        // função de callback será chamada quando o navegador acessar a hash adicionada para roteamento.
+    });
+
+    // ou
+    Router.Add({hash: '/pagina', title: 'Página Genérica'}, (e) => {
+        // função de callback será chamada quando o navegador acessar a hash adicionada para roteamento.
+    });
+
+    // ou (definir como root)
+    Router.Add({root: true, hash: '/pagina', title: 'Página Genérica'}, (e) => {
+        // função de callback será chamada quando o navegador acessar a hash adicionada para roteamento.
     });
 
 
 ````
+
+> **DICA**: Você pode definir uma rota _root_ passando a propriedade _root_ como _true_ no object.
 
 ## Definindo Root
 Quando o usuário acessar a _index_ do site, nenhuma _hash_ está constando na rota.
@@ -41,14 +53,11 @@ Ele será usado quando não houver _hashs_ na url.
 
 ````js
 
-    Router.SetRoot('/pagina', (e) => {
-        // função de callback será chamada quando o navegador carregar a hash #inicio ou a index do site.
+    Router.SetRoot((e) => {
+        // função de callback será chamada quando o navegador carregar a index do site.
     });
 
-````
-
->  Não utilize no **SetRoot** apenas uma "/", isso pode confundir o módulo.
- 
+```` 
 
 ## Definindo Título
 Você pode usar o método  **SetTitle** para definir um título de página para uma rota.
@@ -67,6 +76,15 @@ Use o método  **Start** após configurar as rotas para iniciar o serviço de ro
 ````js
 
     Router.Start();
+
+````
+
+## Parar Roteamento
+Use o método  **Stop** para parar o monitoramento de roteamento em seu site.
+
+````js
+
+    Router.Stop();
 
 ````
 
@@ -131,12 +149,12 @@ Caso seja necessário, você pode importar um arquivo _JSON_ contendo uma _array
 
     [
         {
-            "root": true,           // define que a rota "/inicio" é a principal (root).
-            "route": "/inicio",     // rota
+            "root": true,           // define que está é a rota principal (root).
+            "hash": "/inicio",      // hash
             "title": "Início"       // texto para atribuir como título da página no navegador.
         },
         {
-            "route": "/sobre",
+            "hash": "/sobre",
             "title": "Sobre",
         }
     ]
@@ -154,16 +172,11 @@ Sempre que o usuário acessar uma rota mapeada, indiferente da rota, você vai r
 
 ````
 
-## EventListener
-É possível detectar quando uma rota foi alterada e processada pelo roteamento, basta definir:
+## Obter Rotas
+Você pode obter todas as rotas configuradas usando o método **GetRoutes**.
 
 ````js
 
-    window.addEventListener('routerChange', function (e) {
-        const details = e.detail;
-        console.log('detalhes', details);
-    })
+    const routes = Router.GetRoutes();
 
 ````
-
-Dentro de **detail** você tem as informações da rota acessada e um _object_ com todos os parâmetros recebidos pela URL.

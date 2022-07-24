@@ -2,144 +2,106 @@
     global.RouterEngine = factory();
 }(this, (function () {
 
+    // Rotas:
     var Routes = [
         {
-            route: '',
+            hash: '',
             callBack: null,
             root: false
         }
     ];
 
-    var Root;
+    // Flag indicando se roteamento foi iniciado:
+    var Started = false;
 
+    // Flag indicando se o Root foi definido:
+    var Root = false;
+
+    // RenderEngine Object:
     var Render;
 
+    // Callbacks:
     var NotFoundCallback;
-
     var OnChangeCallback;
 
     function RouterEngine() {
-
+        Routes = [];
         return this;
     }
 
-    // Adicionar Rota:
-    RouterEngine.prototype.Add = function (route, callBack) {
-        route = this._trimSlashes(route);
-        if (!route) { throw '[Add] Não é possível adicionar uma rota vázia.' }
-        Routes.push({ route, callBack });
-    };
-
-    // Definir Root:
-    RouterEngine.prototype.SetRoot = function (route, callBack) {
-        route = this._trimSlashes(route);
-        if (!route) { throw '[SetRoot] Não é possível adicionar uma rota vázia como root.' }
-        Root = route;
-        this.Add(route, callBack);
-    };
-
-    // Definir ouvinte para uma rota específica:
-    RouterEngine.prototype.SetListener = function (hash, callBack) {
-        hash = this._trimSlashes(hash);
-        const route = this._getRoute(hash);
-        if (!route) { throw '[SetListener] Não foi encontrado nenhuma rota definida para essa hash.' }
-        route.callBack = callBack;
-    }
-
-    // Definir título da página:
-    RouterEngine.prototype.SetTitle = function (hash, title) {
-        hash = this._trimSlashes(hash);
-        const route = Routes.find(ROUTE => ROUTE.route == hash);
-        if (!route) { throw '[SetTitle] Não foi encontrado nenhuma rota definida para essa hash.' }
-        route.title = title || '';
-    };
-
-    // Navegar para uma página (hash) específica:
-    RouterEngine.prototype.NavigateTo = function (path) {
-        path = this._trimSlashes(path);
-        window.location.hash = path;
-    };
-
-    // Definir RenderEngine:
-    RouterEngine.prototype.SetRenderEngine = function (object) {
-        Render = object
+    // Obter array com rotas adicionadas e configuradas:
+    RouterEngine.prototype.GetRoutes = function () {
+        return Routes;
     };
 
     // Definir callback de 'onChange':
     RouterEngine.prototype.OnChange = function (callback) {
         OnChangeCallback = typeof callback === 'function' ? callback : null;
-    };
-
-    // Definir Callback para erro 404:
-    RouterEngine.prototype.NotFound = function (callback) {
-        NotFoundCallback = typeof callback === 'function' ? callback : null;
-    };
-
-    // Iniciar escuta de hash:
-    RouterEngine.prototype.Start = async function () {
-        const _this = this;
-
-        // Primeira Hash ou Root:
-        const firstHash = this._getHash();
-        if (firstHash) {
-
-            const route = _this._getRoute(firstHash);
-            if (route) {
-                await this._renderPage(firstHash);
-                this._setTitle(firstHash);
-                this._callCallback(firstHash);
-                this._callEventListener(firstHash);
-            } else {
-                if (NotFoundCallback) { NotFoundCallback(); }
-            }
-
-
-        } else {
-
-
-            if (Root) {
-                await this._renderPage(Root);
-                this._setTitle(Root);
-                this._callCallback(Root);
-                this._callEventListener(Root);
-            } else {
-                console.warn("Você não definiu uma rota de root no mapeamento.")
-            }
-
-        }
-
-        // Iniciar Trigger:
-        window.onhashchange = async function () {
-
-            const hash = _this._getHash();
-            if (hash) {
-
-                const route = _this._getRoute(hash);
-                if (route) {
-                    await _this._renderPage(hash);
-                    _this._setTitle(hash);
-                    _this._callCallback(hash);
-                    _this._callEventListener(hash);
-                } else {
-
-                    if (NotFoundCallback) { NotFoundCallback(); }
-
-                }
-
-
-            } else {
-                await _this._renderPage(Root);
-                _this._setTitle(Root);
-                _this._callCallback(Root);
-                _this._callEventListener(Root);
-            }
-
-
-
-        }
-
         return this;
     };
+
+    // Definir callback para erro 404:
+    RouterEngine.prototype.NotFound = function (callback) {
+        NotFoundCallback = typeof callback === 'function' ? callback : null;
+        return this;
+    };
+
+    // Definir RenderEngine:
+    RouterEngine.prototype.SetRenderEngine = function (object) {
+        Render = object;
+        return this;
+    };
+
+    // Definir Root:
+    RouterEngine.prototype.SetRoot = function (callBack) {
+        Root = true;
+        Routes.push({ root: true, hash: '/', callBack });
+        return this;
+    };
+
+    // Adicionar Hash para Roteamento:
+    RouterEngine.prototype.Add = function (data, callBack) {
+        if (typeof data === 'string') {
+            let hash = this._trimSlashes(data);
+            hash = hash == '' ? '/' : hash;
+            if (this._routeExists(hash)) { throw '[Add] Não é possível adicionar hashs repetidas para mapeamento.'; }
+            Routes.push({ hash, callBack });
+        }
+        else {
+            data.hash = this._trimSlashes(data.hash);
+            data.hash = data.hash == '' ? '/' : data.hash;
+            if (this._routeExists(data.hash)) { throw '[Add] Não é possível adicionar hashs repetidas para mapeamento.'; }
+            Routes.push({ ...data, callBack });
+        }
+        return this;
+    };
+
+    // Definir/alterar callback de uma rota específica:
+    RouterEngine.prototype.SetListener = function (hash, callBack) {
+        hash = this._trimSlashes(hash);
+        if (!this._routeExists(hash)) { throw '[SetListener] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
+        const route = Routes.find(R => R.hash == hash);
+        route.callBack = callBack;
+        return this;
+    }
+
+    // Definir/alterar o título de uma rota:
+    RouterEngine.prototype.SetTitle = function (hash, title) {
+        hash = this._trimSlashes(hash);
+        if (!this._routeExists(hash)) { throw '[SetTitle] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
+        const route = Routes.find(R => R.hash == hash);
+        route['title'] = title || '';
+        return this;
+    };
+
+    // Navegar para uma hash específica:
+    RouterEngine.prototype.NavigateTo = function (hash) {
+        hash = this._trimSlashes(hash);
+        if (!this._routeExists(hash)) { throw '[NavigateTo] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
+        window.location.hash = path;
+        return this;
+    };
+
 
     // Carregar rotas de um arquivo JSON:
     RouterEngine.prototype.LoadRoutesFromFile = async function (url) {
@@ -149,12 +111,12 @@
             if (Array.isArray(routesFromfile)) {
 
                 routesFromfile.forEach(R => {
-                    R.route = this._trimSlashes(R.route);
+                    R.hash = this._trimSlashes(R.hash);
                 })
                 Routes = routesFromfile;
 
                 const root = Routes.find(r => r.root == true);
-                Root = root.route || null;
+                Root = root ? true : false;
 
             } else {
                 throw 'Arquivo JSON não contém uma Array de rotas válida.';
@@ -163,58 +125,98 @@
         catch (error) {
             throw error;
         }
+        return this;
+    };
+
+    // Iniciar Monitoramento:
+    RouterEngine.prototype.Start = function () {
+        if (Started) { console.warn('Roteamento já foi iniciado.'); return; } else { Started = true; }
+
+        // Primeira Hash:
+        this._routingMonitoring();
+
+        // Iniciar:
+        window.onhashchange = (e) => { this._routingMonitoring(); }
+
+        return this;
+    };
+
+    // Parar Monitoramento:
+    RouterEngine.prototype.Stop = function () {
+        if (!Started) { console.warn('Roteamento está parado.'); return; } else { Started = false; }
+
+        // Parar:
+        window.onhashchange = null;
+
+        return this;
     };
 
     // ------------------------------------------------------------------------------------------------------------------ //
 
+    // Monitoramento do Roteamento:
+    RouterEngine.prototype._routingMonitoring = async function () {
+
+        const hash = this._getHash();
+        const routeExists = this._routeExists(hash);
+
+        // Caso a rota não exista:
+        if (hash != '/' & !routeExists) {
+            if (typeof NotFoundCallback === 'function') { NotFoundCallback(); }
+            return;
+        }
+
+        if (hash == '/' && !Root) { console.warn("Não foi definido um root para o roteamento."); }
+
+        this._setTitle(hash);
+        this._callOnChangeCallback(hash);
+
+        await this._renderPage(hash); // Renderizar página se RenderEngine foi referenciado.
+
+        this._callCallback(hash);
+
+    };
 
     // Obter hash atual:
     RouterEngine.prototype._getHash = function () {
-        const hash = window.location.hash.substr(1).replace(/(\?.*)$/, "");
-        return this._trimSlashes(hash);
+        let hash = window.location.hash.substr(1).replace(/(\?.*)$/, "");
+        if (hash == '') { hash = '/' }
+        return hash;
     };
 
     // Obter rota:
     RouterEngine.prototype._getRoute = function (hash) {
-        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        const route = Routes.find(ROUTE => ROUTE.hash == hash);
         return route || null;
     };
 
-
-    // Renderizar página com 
+    // Renderizar página com RenderEngine:
     RouterEngine.prototype._renderPage = async function (hash) {
         const route = this._getRoute(hash);
-        if (Render) { await Render.Page(route.path); }
+        if (Render) {
+            if (route.path) { await Render.Page(route.path); }
+        }
     };
-
-
 
     // Chamar evento de callback definida para a rota:
     RouterEngine.prototype._callCallback = function (hash) {
         hash = this._trimSlashes(hash);
-        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        const route = this._getRoute(hash);
         if (route) {
             if (typeof route.callBack === 'function') { route.callBack(); }
         }
     };
 
+
+
     // Chamar evento de escuta definido pelo desenvolvedor:
-    RouterEngine.prototype._callEventListener = function (hash) {
+    RouterEngine.prototype._callOnChangeCallback = function (hash) {
 
-        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        const route = this._getRoute(hash);
         const parameters = this._getUrlParams();
-        const details = { route, hash, parameters };
-
+        const details = { ...route, hash, parameters };
 
         // OnChange:
         if (OnChangeCallback) { OnChangeCallback(details); }
-
-        // Event Listener:
-        const event = new CustomEvent('routerChange', { detail: details });
-        window.dispatchEvent(event);
-
-        // OnEvent:
-        if (typeof window['onRouterChange'] === 'function') { window.onRouterChange(details); }
 
     };
 
@@ -237,7 +239,7 @@
     // Definir título da página pela rota (se disponível):
     RouterEngine.prototype._setTitle = function (hash) {
         hash = this._trimSlashes(hash);
-        const route = Routes.find(ROUTE => ROUTE.route == hash);
+        const route = this._getRoute(hash);
         if (route) {
             const title = route.title;
             document.getElementsByTagName('title')[0].innerHTML = title || '';
@@ -247,7 +249,15 @@
     // Trim slashes for path
     RouterEngine.prototype._trimSlashes = function (path) {
         if (typeof path !== "string") { return ""; }
-        return path.toString().replace(/\/$/, "").replace(/^\//, "");
+        path = path.toString().replace(/\/$/, "").replace(/^\//, "");
+        return path == '' ? '/' : path;
+    };
+
+
+    // Verificar se existe uma hash mapeada para roteamento:
+    RouterEngine.prototype._routeExists = function (hash) {
+        const route = this._getRoute(hash);
+        return route ? true : false;
     };
 
     // Requisição GET:
