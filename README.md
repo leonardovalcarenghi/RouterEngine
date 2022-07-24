@@ -143,6 +143,17 @@ Caso seja necessário, você pode importar um arquivo _JSON_ contendo uma _array
 
 ````
 
+## Rota Navegada
+Sempre que o usuário acessar uma rota mapeada, indiferente da rota, você vai receber um _callBack_ contendo informações da rota.
+
+````js
+
+    Router.OnChange((e) => {
+        console.log('Rota Navegada:', e);
+    });
+
+````
+
 ## EventListener
 É possível detectar quando uma rota foi alterada e processada pelo roteamento, basta definir:
 

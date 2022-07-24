@@ -3,7 +3,6 @@ var Router = new RouterEngine();
 
 window.onload = async function () {
 
-
     const container = document.getElementById("root");
 
     Router.SetRoot('/inicio', async function (e) {
@@ -18,10 +17,11 @@ window.onload = async function () {
 
     Router.NotFound(function (e) {
         console.error('Página não foi encontrada.');
+        container.innerHTML = '<h4>Página não encontrada</h4>';
     });
 
     Router.OnChange(function (e) {
-        console.log('Rota Navegada.', e);
+        console.log('Rota', e);
     });
 
     Router.Start();

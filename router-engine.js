@@ -82,18 +82,30 @@
         // Primeira Hash ou Root:
         const firstHash = this._getHash();
         if (firstHash) {
-            await this._renderPage(firstHash);
-            this._setTitle(firstHash);
-            this._callCallback(firstHash);
-            this._callEventListener(firstHash);
 
+            const route = _this._getRoute(firstHash);
+            if (route) {
+                await this._renderPage(firstHash);
+                this._setTitle(firstHash);
+                this._callCallback(firstHash);
+                this._callEventListener(firstHash);
+            } else {
+                if (NotFoundCallback) { NotFoundCallback(); }
+            }
 
 
         } else {
-            await this._renderPage(Root);
-            this._setTitle(Root);
-            this._callCallback(Root);
-            this._callEventListener(Root);
+
+
+            if (Root) {
+                await this._renderPage(Root);
+                this._setTitle(Root);
+                this._callCallback(Root);
+                this._callEventListener(Root);
+            } else {
+                console.warn("Você não definiu uma rota de root no mapeamento.")
+            }
+
         }
 
         // Iniciar Trigger:
