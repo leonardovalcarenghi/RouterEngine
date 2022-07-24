@@ -54,6 +54,7 @@
 
     // Definir Root:
     RouterEngine.prototype.SetRoot = function (callBack) {
+        if (Root) { throw '[SetRoot] Não é possível adicionar mais de uma rota como root.' }
         Root = true;
         Routes.push({ root: true, hash: '/', callBack });
         return this;
@@ -71,9 +72,25 @@
             data.hash = this._trimSlashes(data.hash);
             data.hash = data.hash == '' ? '/' : data.hash;
             if (this._routeExists(data.hash)) { throw '[Add] Não é possível adicionar hashs repetidas para mapeamento.'; }
-            Routes.push({ ...data, callBack });
+
+            if (data.root) {
+                if (Root) { throw '[Add] Não é possível adicionar mais de uma rota como root.' }
+                Root = true;
+            }
+
+
+
+            Routes.push(data.callBack ? { ...data } : { ...data, callBack });
         }
         return this;
+    };
+
+    // Remover rota do roteamento:
+    RouterEngine.prototype.Remove = function (hash) {
+        hash = this._trimSlashes(hash);
+        const route = Routes.find(r => r.hash == hash);
+        const index = Routes.indexOf(route);
+        if (index) { Routes.splice(index, 1); }
     };
 
     // Definir/alterar callback de uma rota específica:
@@ -103,30 +120,30 @@
     };
 
 
-    // Carregar rotas de um arquivo JSON:
-    RouterEngine.prototype.LoadRoutesFromFile = async function (url) {
-        const file = await this._get(url);
-        try {
-            const routesFromfile = JSON.parse(file);
-            if (Array.isArray(routesFromfile)) {
+    // // Carregar rotas de um arquivo JSON:
+    // RouterEngine.prototype.LoadRoutesFromFile = async function (url) {
+    //     const file = await this._get(url);
+    //     try {
+    //         const routesFromfile = JSON.parse(file);
+    //         if (Array.isArray(routesFromfile)) {
 
-                routesFromfile.forEach(R => {
-                    R.hash = this._trimSlashes(R.hash);
-                })
-                Routes = routesFromfile;
+    //             routesFromfile.forEach(R => {
+    //                 R.hash = this._trimSlashes(R.hash);
+    //             })
+    //             Routes = routesFromfile;
 
-                const root = Routes.find(r => r.root == true);
-                Root = root ? true : false;
+    //             const root = Routes.find(r => r.root == true);
+    //             Root = root ? true : false;
 
-            } else {
-                throw 'Arquivo JSON não contém uma Array de rotas válida.';
-            }
-        }
-        catch (error) {
-            throw error;
-        }
-        return this;
-    };
+    //         } else {
+    //             throw 'Arquivo JSON não contém uma Array de rotas válida.';
+    //         }
+    //     }
+    //     catch (error) {
+    //         throw error;
+    //     }
+    //     return this;
+    // };
 
     // Iniciar Monitoramento:
     RouterEngine.prototype.Start = function () {
