@@ -33,7 +33,7 @@ Instancie o **RouterEngine** globalmente em seu projeto, de preferência no _mai
 
 
 ## Adicionar Rota
-Para adicionar uma rota usa o método **Add**, informando os seguites argumentos:
+Para adicionar uma rota utilize o método **Add**, informando os seguites argumentos:
 
 ````js
 
@@ -62,7 +62,7 @@ Para adicionar uma rota, defindo ela como root:
 
 
 ## Remover Rota
-Para remover uma rota usa o método **Remove**:
+Para remover uma rota, utilize o método **Remove**:
 
 ````js
 
