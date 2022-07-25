@@ -90,7 +90,10 @@
         hash = this._trimSlashes(hash);
         const route = Routes.find(r => r.hash == hash);
         const index = Routes.indexOf(route);
-        if (index) { Routes.splice(index, 1); }
+        if (index) {
+            if (route.root) { Root = false; }
+            Routes.splice(index, 1);
+        }
     };
 
     // Definir/alterar callback de uma rota específica:
