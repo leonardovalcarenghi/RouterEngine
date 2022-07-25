@@ -37,7 +37,9 @@ Para adicionar uma rota utilize o método **Add**, informando os seguites argume
 
 ````js
 
-    Router.Add('/pagina', (e) => {  });
+    Router.Add('/pagina', (e) => { 
+        // Função de callBack, será chamada quando o navegador acessar a rota.
+    });
 
 ````
 
@@ -45,7 +47,9 @@ Para adicionar uma rota, definindo um título para a página, use:
 
 ````js
 
-    Router.Add({hash: '/pagina', title: 'Título da Página'}, (e) => {  });
+    Router.Add({hash: '/pagina', title: 'Título da Página'}, (e) => { 
+        // Função de callBack, será chamada quando o navegador acessar a rota.
+    });
 
 ````
 
@@ -53,7 +57,9 @@ Para adicionar uma rota, defindo ela como root:
 
 ````js
 
-    Router.Add({root: true, hash: '/pagina'}, (e) => {  });
+    Router.Add({root: true, hash: '/pagina'}, (e) => { 
+        // Função de callBack, será chamada quando o navegador acessar a rota.
+    });
 
 ````
 
@@ -79,9 +85,13 @@ Para definir o root, utilize o método **SetRoot**:
 
 ````js
 
-    Router.SetRoot((e) => { });
+    Router.SetRoot((e) => {
+        // Função de callBack, será chamada quando o navegador acessar o root.
+    });
 
 ````
+
+Defina o _Root_ para detectar quando o navegador estiver na _index_ do site. 
 
 
 
@@ -155,7 +165,7 @@ Para atribuir um _callBack_ identificando quando o usuário acessar uma rota nã
 ````js
 
     Router.NotFound((e) => { 
-        console.error('Error 404', e) 
+        console.error('Error 404', e);
     });
 
 ````
@@ -168,13 +178,15 @@ Para atribuir um _callBack_ identificando quando o usuário acessar uma rota, ut
 
 ````js
 
-    Router.OnChange((e) => { 
-        console.error('Rota', e) 
+    Router.OnChange((route) => { 
+        console.log('Rota', route);
     });
 
 ````
 
-> Quando a rota navegada for uma não mapeada, esse _callBack_ não será chamado e sim o _callBack_ de **NotFound**.
+Como argumento do _callBack_ você recebe informações da rota navegada.
+
+> ⚠ Quando a rota navegada for uma não mapeada, esse _callBack_ não será chamado e sim o _callBack_ de **NotFound**.
 
 
 <br/>
@@ -214,4 +226,4 @@ Para definir o título de uma rota, utilize o método **SetTitle**:
 
 ````
 
-> Utilize esse método somente depois de adicionar uma rota.
+> ⚠ Utilize esse método somente depois de adicionar uma rota.
