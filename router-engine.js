@@ -24,6 +24,16 @@
     var NotFoundCallback;
     var OnChangeCallback;
 
+    /**
+     * RouterEngine
+     *
+     * @version 1.0
+     * @author Leonardo Valcarenghi
+     *
+     * @constructor
+     * 
+     * @returns {RouterEngine}
+     */
     function RouterEngine() {
         Routes = [];
         return this;
