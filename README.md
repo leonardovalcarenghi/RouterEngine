@@ -196,6 +196,55 @@ Como argumento do _callBack_ você recebe informações da rota navegada.
 
 <br/>
 
+## Parâmetros
+É possivel usar os parâmetros recebidos via URL.
+
+No _callBack_ referente a página, você recebe como argumento um _object_ que contém todos os parâmetros que foram passados pela URL.
+
+
+**EXEMPLO**
+
+````js
+
+    Router.Add('/pagina-1', (e) => { 
+        console.log(e);
+    });
+
+    // ou
+
+    Router.SetListener('/pagina-1', (e) => {
+        console.log(e);
+    });
+
+    // ou
+
+    Router.OnChange((e) => { 
+        console.log(e);
+    });
+
+````
+
+**CONSOLE**
+
+````json
+
+    // http://localhost/test/#pagina-1?parametro1=abc&parametro2=def
+
+    {
+        "callBack": ...,
+        "hash": "pagina-1",
+        "parameters": {
+            "parametro1": "abc",
+            "parametro2": "def"
+        },
+        "root": ...
+    }
+
+````
+
+
+<br/>
+
 ## Navegação
 Para navegar entre as rotas, utilize o método **NavigateTo** ou os métodos nativos do JavaScript:
 
