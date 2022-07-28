@@ -16,7 +16,7 @@ window.onload = async function () {
 
     Router.Add({
         hash: '/pagina-3',
-        title: 'Página 3'
+        title: 'Página 3',
     },
         (e) => {
             container.innerHTML = '<h2>Página 3</h2>';
@@ -24,7 +24,9 @@ window.onload = async function () {
     );
 
     Router.Add({
-        hash: '/pagina-4', title: 'Página 4', callBack: (e) => {
+        hash: '/pagina-4',
+        title: 'Página 4',
+        callBack: (e) => {
             container.innerHTML = '<h2>Página 4</h2>';
         }
     });
@@ -45,7 +47,7 @@ window.onload = async function () {
     });
 
 
-    
+
     // -------------------------------------------------------------------------------------------------------------------
     // ATRIBUINDO/MODIFICANDO CALLBACKS DAS ROTAS  //
 
@@ -58,7 +60,7 @@ window.onload = async function () {
     // -------------------------------------------------------------------------------------------------------------------
     // ATRIBUINDO TÍTULO DAS PÁGINAS PARA AS ROTAS //
 
-    Router.SetTitle('/pagina-1', 'Página 1');
+    Router.SetTitle('/pagina-1', 'Página 1 - SetTitle');
 
 
 
