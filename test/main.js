@@ -53,6 +53,7 @@ window.onload = async function () {
 
     Router.SetListener('/pagina-1', (e) => {
         container.innerHTML = '<h2>Página 1 - SetListener</h2>';
+        console.log('Página 01', e);
     })
 
 
@@ -67,8 +68,8 @@ window.onload = async function () {
     // -------------------------------------------------------------------------------------------------------------------
     // CALLBACK DE ROTA NÃO MAPEADA //   
 
-    Router.NotFound(() => {
-        console.error('Rota não mapeada.');
+    Router.NotFound((e) => {
+        console.error('Rota não mapeada.', e);
     });
 
 
