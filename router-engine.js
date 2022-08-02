@@ -78,22 +78,29 @@
 
     // Definir Root:
     RouterEngine.prototype.SetRoot = function (callBack) {
-        if (Root) { throw '[SetRoot] Não é possível adicionar mais de uma rota como root.' }
+        if (Root) { throw '[SetRoot] Não é possível adicionar mais de uma rota para o root.' }
+        if (callBack == null) { throw '[SetRoot] Não é possível atribuir \'null\' como callBack do Root.'; }
+        if (callBack == undefined) { throw '[SetRoot] Não é possível atribuir \'undefined\' como callBack do Root.'; }
+        if (typeof callBack != 'function') { throw '[SetRoot] Somente funções podem serem atribuidas como callBack para o Root.'; }
+
         Root = true;
         Routes.push({ root: true, hash: '/', callBack });
         return this;
     };
-
+    
     // Adicionar Hash para Roteamento:
     RouterEngine.prototype.Add = function (data, callBack) {
         if (typeof data === 'string') {
             let hash = this._trimSlashes(data);
+            if (!hash) { throw '[Add] Informe qual \'hash\' você quer adicionar no mapeamento.'; }
             hash = hash == '' ? '/' : hash;
             if (this._routeExists(hash)) { throw '[Add] Não é possível adicionar hashs repetidas para mapeamento.'; }
             Routes.push({ hash, callBack });
         }
         else {
             data.hash = this._trimSlashes(data.hash);
+            if (!data.hash) { throw '[Add] Informe qual \'hash\' você quer adicionar no mapeamento.'; }
+
             data.hash = data.hash == '' ? '/' : data.hash;
             if (this._routeExists(data.hash)) { throw '[Add] Não é possível adicionar hashs repetidas para mapeamento.'; }
 
@@ -111,6 +118,8 @@
     // Remover rota do roteamento:
     RouterEngine.prototype.Remove = function (hash) {
         hash = this._trimSlashes(hash);
+        if (!hash) { throw '[Remove] Informe qual \'hash\' você quer remover do mapeamento.'; }
+        if (!this._routeExists(hash)) { throw '[Remove] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
         const route = Routes.find(r => r.hash == hash);
         const index = Routes.indexOf(route);
         if (index) {
@@ -123,8 +132,8 @@
     // Definir/alterar callback de uma rota específica:
     RouterEngine.prototype.SetListener = function (hash, callBack) {
         hash = this._trimSlashes(hash);
+        if (!hash) { throw '[SetListener] Informe para qual \'hash\' você quer definir o callBack.'; }
         if (!this._routeExists(hash)) { throw '[SetListener] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
-
         if (callBack == null) { throw '[SetListener] Não é possível atribuir \'null\' como callBack da rota.'; }
         if (callBack == undefined) { throw '[SetListener] Não é possível atribuir \'undefined\' como callBack da rota.'; }
         if (typeof callBack != 'function') { throw '[SetListener] Somente funções podem serem atribuidas como callBack para as rotas.'; }
@@ -136,6 +145,7 @@
 
     // Remover callback de uma rota específica:
     RouterEngine.prototype.RemoveListener = function (hash) {
+        if (!hash) { throw '[RemoveListener] Informe para qual \'hash\' você quer remover o callBack.'; }
         hash = this._trimSlashes(hash);
         if (!this._routeExists(hash)) { throw '[RemoveListener] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
         const route = Routes.find(R => R.hash == hash);
@@ -146,6 +156,7 @@
     // Definir/alterar o título de uma rota:
     RouterEngine.prototype.SetTitle = function (hash, title) {
         hash = this._trimSlashes(hash);
+        if (!hash) { throw '[SetTitle] Informe para qual \'hash\' você quer definir o título.'; }
         if (!this._routeExists(hash)) { throw '[SetTitle] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
         const route = Routes.find(R => R.hash == hash);
         route['title'] = title || '';
@@ -155,6 +166,7 @@
     // Navegar para uma hash específica:
     RouterEngine.prototype.NavigateTo = function (hash) {
         hash = this._trimSlashes(hash);
+        if (!hash) { throw '[NavigateTo] Informe para qual \'hash\' você quer redirecionar o usuário.'; }
         if (!this._routeExists(hash)) { throw '[NavigateTo] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
         window.location.hash = path;
         return this;
