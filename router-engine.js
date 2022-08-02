@@ -21,8 +21,8 @@
     var Render;
 
     // Callbacks:
-    var NotFoundCallback;
-    var OnChangeCallback;
+    var NotFoundCallBack;
+    var OnChangeCallBack;
 
     /**
      * RouterEngine
@@ -39,21 +39,35 @@
         return this;
     }
 
+
+    // Definir callback para erro 404:
+    Object.defineProperty(RouterEngine.prototype, 'NotFound', {
+        set: function (callBack) {
+            NotFoundCallBack = typeof callBack === 'function' ? callBack : null;
+        }
+    });
+
+    // Definir callback de 'onChange':
+    Object.defineProperty(RouterEngine.prototype, 'OnChange', {
+        set: function (callBack) {
+            OnChangeCallBack = typeof callBack === 'function' ? callBack : null;
+        }
+    });
+
+    // Definir Root:
+    Object.defineProperty(RouterEngine.prototype, 'Root', {
+        set: function (callBack) {
+            if (Root) { throw '[SetRoot] Não é possível adicionar mais de uma rota como root.' }
+            Root = true;
+            Routes.push({ root: true, hash: '/', callBack });
+            return this;
+        }
+    });
+
+
     // Obter array com rotas adicionadas e configuradas:
     RouterEngine.prototype.GetRoutes = function () {
         return Routes;
-    };
-
-    // Definir callback de 'onChange':
-    RouterEngine.prototype.OnChange = function (callback) {
-        OnChangeCallback = typeof callback === 'function' ? callback : null;
-        return this;
-    };
-
-    // Definir callback para erro 404:
-    RouterEngine.prototype.NotFound = function (callback) {
-        NotFoundCallback = typeof callback === 'function' ? callback : null;
-        return this;
     };
 
     // Definir RenderEngine:
@@ -103,6 +117,7 @@
             if (route.root) { Root = false; }
             Routes.splice(index, 1);
         }
+        return this;
     };
 
     // Definir/alterar callback de uma rota específica:
@@ -111,6 +126,15 @@
         if (!this._routeExists(hash)) { throw '[SetListener] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
         const route = Routes.find(R => R.hash == hash);
         route.callBack = callBack;
+        return this;
+    }
+
+    // Remover callback de uma rota específica:
+    RouterEngine.prototype.RemoveListener = function (hash) {
+        hash = this._trimSlashes(hash);
+        if (!this._routeExists(hash)) { throw '[RemoveListener] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
+        const route = Routes.find(R => R.hash == hash);
+        route.callBack = null;
         return this;
     }
 
@@ -130,32 +154,6 @@
         window.location.hash = path;
         return this;
     };
-
-
-    // // Carregar rotas de um arquivo JSON:
-    // RouterEngine.prototype.LoadRoutesFromFile = async function (url) {
-    //     const file = await this._get(url);
-    //     try {
-    //         const routesFromfile = JSON.parse(file);
-    //         if (Array.isArray(routesFromfile)) {
-
-    //             routesFromfile.forEach(R => {
-    //                 R.hash = this._trimSlashes(R.hash);
-    //             })
-    //             Routes = routesFromfile;
-
-    //             const root = Routes.find(r => r.root == true);
-    //             Root = root ? true : false;
-
-    //         } else {
-    //             throw 'Arquivo JSON não contém uma Array de rotas válida.';
-    //         }
-    //     }
-    //     catch (error) {
-    //         throw error;
-    //     }
-    //     return this;
-    // };
 
     // Iniciar Monitoramento:
     RouterEngine.prototype.Start = function () {
@@ -197,7 +195,7 @@
         if (hash == '/' && !Root) { console.warn("Não foi definido um root para o roteamento."); }
 
         this._setTitle(hash);
-        this._callOnChangeCallback(hash);
+        this._callOnChangeCallBack(hash);
         if (Render) { await this._renderPage(hash); } // Renderizar página se RenderEngine foi referenciado.
         this._callCallback(hash);
 
@@ -243,19 +241,19 @@
         const parameters = this._getUrlParams();
         const details = { hash, parameters };
 
-        if (typeof NotFoundCallback === 'function') { NotFoundCallback(details); }
+        if (typeof NotFoundCallBack === 'function') { NotFoundCallBack(details); }
 
     };
 
     // Chamar evento de escuta definido pelo desenvolvedor:
-    RouterEngine.prototype._callOnChangeCallback = function (hash) {
+    RouterEngine.prototype._callOnChangeCallBack = function (hash) {
 
         const route = this._getRoute(hash);
         const parameters = this._getUrlParams();
         const details = { ...route, hash, parameters };
 
         // OnChange:
-        if (OnChangeCallback) { OnChangeCallback(details); }
+        if (OnChangeCallBack) { OnChangeCallBack(details); }
 
     };
 

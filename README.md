@@ -81,13 +81,19 @@ Para remover uma rota, utilize o método **Remove**:
 
 
 ## Definir Root
-Para definir o root, utilize o método **SetRoot**:
+Para definir o root, utilize o método **SetRoot** ou a propriedade **Root**:
 
 ````js
 
     Router.SetRoot((e) => {
         // Função de callBack, será chamada quando o navegador acessar o root.
     });
+
+    // ou
+
+    Router.Root = function (e) {
+        // Função de callBack, será chamada quando o navegador acessar o root.
+    };
 
 ````
 
@@ -139,7 +145,7 @@ Para parar o roteamento, utilize o método **Stop**:
 
 
 ## Atribuir Callback 
-Para atribuir ou modificar um _callBack_ de uma rota, utilize o método **SetListener**:
+Para atribuir ou modificar o _callBack_ de uma rota, utilize o método **SetListener**:
 
 ````js
 
@@ -147,7 +153,7 @@ Para atribuir ou modificar um _callBack_ de uma rota, utilize o método **SetLis
 
 ````
 
-Para remover o _callBack_:
+Para remover o _callBack_, use o método **RemoveListener** ou:
 
 ````js
 
@@ -158,15 +164,26 @@ Para remover o _callBack_:
 
 <br/>
 
-
-## Rota Não Mapeada
-Para atribuir um _callBack_ identificando quando o usuário acessar uma rota não mapeada, utilize o método **NotFound**:
+## Remover Callback 
+Para remove o _callBack_ de uma rota, utilize o método **RemoveListener**:
 
 ````js
 
-    Router.NotFound((e) => { 
+    Router.RemoveListener('/pagina');
+
+````
+
+<br/>
+
+
+## Rota Não Mapeada
+Para atribuir um _callBack_ identificando quando o usuário acessar uma rota não mapeada, utilize o propriedade **NotFound**:
+
+````js
+
+    Router.NotFound = function (e) { 
         console.error('Error 404', e);
-    });
+    };
 
 ````
 
@@ -174,13 +191,13 @@ Para atribuir um _callBack_ identificando quando o usuário acessar uma rota nã
 
 
 ## Rota Navegada
-Para atribuir um _callBack_ identificando quando o usuário acessar uma rota, utilize o método **OnChange**:
+Para atribuir um _callBack_ identificando quando o usuário acessar uma rota, utilize a propriedade **OnChange**:
 
 ````js
 
-    Router.OnChange((route) => { 
+    Router.OnChange = function (e) { 
         console.log('Rota', route);
-    });
+    };
 
 ````
 
