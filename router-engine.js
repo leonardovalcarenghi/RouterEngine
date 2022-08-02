@@ -89,7 +89,6 @@
             }
 
 
-
             Routes.push(data.callBack ? { ...data } : { ...data, callBack });
         }
         return this;
@@ -191,7 +190,7 @@
 
         // Caso a rota não exista:
         if (hash != '/' & !routeExists) {
-            if (typeof NotFoundCallback === 'function') { NotFoundCallback(); }
+            this._callNotFoundCallback(hash);
             return;
         }
 
@@ -199,9 +198,7 @@
 
         this._setTitle(hash);
         this._callOnChangeCallback(hash);
-
-        await this._renderPage(hash); // Renderizar página se RenderEngine foi referenciado.
-
+        if (Render) { await this._renderPage(hash); } // Renderizar página se RenderEngine foi referenciado.
         this._callCallback(hash);
 
     };
@@ -223,20 +220,32 @@
     RouterEngine.prototype._renderPage = async function (hash) {
         const route = this._getRoute(hash);
         if (Render) {
-            if (route.path) { await Render.Page(route.path); }
+            if (route.path) {
+                await Render.Page(route.path);
+            }
         }
     };
 
     // Chamar evento de callback definida para a rota:
     RouterEngine.prototype._callCallback = function (hash) {
-        hash = this._trimSlashes(hash);
+
         const route = this._getRoute(hash);
-        if (route) {
-            if (typeof route.callBack === 'function') { route.callBack(); }
-        }
+        const parameters = this._getUrlParams();
+        const details = { ...route, hash, parameters };
+
+        if (typeof route.callBack === 'function') { route.callBack(details); }
+
     };
 
+    // Chamar evento de callback definido para casos de Erro 404:
+    RouterEngine.prototype._callNotFoundCallback = function (hash) {
 
+        const parameters = this._getUrlParams();
+        const details = { hash, parameters };
+
+        if (typeof NotFoundCallback === 'function') { NotFoundCallback(details); }
+
+    };
 
     // Chamar evento de escuta definido pelo desenvolvedor:
     RouterEngine.prototype._callOnChangeCallback = function (hash) {
