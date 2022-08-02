@@ -64,6 +64,21 @@ Para adicionar uma rota, defindo ela como root:
 ````
 
 
+Para adicionar uma rota passando apenas um parâmetro:
+
+````js
+
+    Router.Add({
+        root: true,
+        hash: '/pagina',
+        callBack: (e) => { 
+            // Função de callBack, será chamada quando o navegador acessar a rota. 
+        }
+    });
+
+````
+
+
 <br/>
 
 
@@ -153,15 +168,6 @@ Para atribuir ou modificar o _callBack_ de uma rota, utilize o método **SetList
 
 ````
 
-Para remover o _callBack_, use o método **RemoveListener** ou:
-
-````js
-
-    Router.SetListener('/pagina', null);
-
-````
-
-
 <br/>
 
 ## Remover Callback 
@@ -235,9 +241,9 @@ No _callBack_ referente a página, você recebe como argumento um _object_ que c
 
     // ou
 
-    Router.OnChange((e) => { 
+    Router.OnChange = function (e) { 
         console.log(e);
-    });
+    };
 
 ````
 

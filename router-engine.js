@@ -124,6 +124,11 @@
     RouterEngine.prototype.SetListener = function (hash, callBack) {
         hash = this._trimSlashes(hash);
         if (!this._routeExists(hash)) { throw '[SetListener] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
+
+        if (callBack == null) { throw '[SetListener] Não é possível atribuir \'null\' como callBack da rota.'; }
+        if (callBack == undefined) { throw '[SetListener] Não é possível atribuir \'undefined\' como callBack da rota.'; }
+        if (typeof callBack != 'function') { throw '[SetListener] Somente funções podem serem atribuidas como callBack para as rotas.'; }
+
         const route = Routes.find(R => R.hash == hash);
         route.callBack = callBack;
         return this;
