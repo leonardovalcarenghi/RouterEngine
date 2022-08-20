@@ -64,7 +64,6 @@
         }
     });
 
-
     // Obter array com rotas adicionadas e configuradas:
     RouterEngine.prototype.GetRoutes = function () {
         return Routes;
