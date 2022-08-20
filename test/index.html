@@ -6,29 +6,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RouterEngine - Test</title>
-</head>
+    <link rel="stylesheet" href="style.css" </head>
 
-<style>
-    a {
-        margin: 5px;
-        text-decoration: none;
-    }
-
-    a:hover {
-        text-decoration: underline;
-    }
-</style>
 
 <body>
 
-    <div id="root"></div>
+    
 
-    <a href="#">root</a>
-    <a href="#pagina-1">Página 1</a>
-    <a href="#pagina-2">Página 2</a>
-    <a href="#pagina-3">Página 3</a>
-    <a href="#pagina-4">Página 4</a>
-    <a href="#pagina-5">Página 5</a>
+    <nav>
+        <div>
+            <label>RouterEngine</label>
+        </div>
+        <div>
+            <a href="#/" class="active">ROOT</a>
+            <a href="#pagina-1">Página 1</a>
+            <a href="#pagina-2">Página 2</a>
+            <a href="#pagina-3">Página 3</a>
+            <a href="#pagina-4">Página 4</a>
+            <a href="#pagina-5">Página 5</a>
+        </div>       
+    </nav>
+
+    <main id="root"></main>
+
 
 
     <script src="../router-engine.js" type="text/javascript"></script>

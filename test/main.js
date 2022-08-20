@@ -53,7 +53,11 @@ window.onload = async function () {
 
     Router.SetListener('/pagina-1', (e) => {
         container.innerHTML = '<h2>Página 1 - SetListener</h2>';
-        console.log('Página 01', e);
+    });
+
+
+    Router.SetListener('/pagina-5', (e) => {
+        container.innerHTML = '<h2>Página 5 - SetListener</h2>';
     })
 
 
@@ -68,18 +72,24 @@ window.onload = async function () {
     // -------------------------------------------------------------------------------------------------------------------
     // CALLBACK DE ROTA NÃO MAPEADA //   
 
-    Router.NotFound((e) => {
+    Router.NotFound = (e) => {
         console.error('Rota não mapeada.', e);
-    });
+    };
 
 
 
     // -------------------------------------------------------------------------------------------------------------------
     // CALLBACK DE ROTA ALTERADA //
 
-    Router.OnChange((e) => {
+    Router.OnChange = (e) => {
         console.log('Rota Acessada', e);
-    });
+
+        const hash = e.hash;
+
+
+        document.querySelectorAll(`a`).forEach(A => { A.classList.remove('active'); });
+        document.querySelector(`a[href="#${hash}"]`).classList.add('active');
+    };
 
 
 
@@ -103,14 +113,9 @@ window.onload = async function () {
 
 }
 
-
 function changeCallback() {
     Router.SetListener('/sobre', e => {
         console.log('callback modificado.')
     })
 }
 
-window.addEventListener('routerChange', function (e) {
-    const details = e.detail;
-    if (typeof InitializePage === 'function') { InitializePage(details); }
-})

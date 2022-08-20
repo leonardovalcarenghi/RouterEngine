@@ -87,7 +87,7 @@
         Routes.push({ root: true, hash: '/', callBack });
         return this;
     };
-    
+
     // Adicionar Hash para Roteamento:
     RouterEngine.prototype.Add = function (data, callBack) {
         if (typeof data === 'string') {
@@ -98,6 +98,9 @@
             Routes.push({ hash, callBack });
         }
         else {
+
+            if (!data) { throw '[Add] Objeto inválido.'; }
+
             data.hash = this._trimSlashes(data.hash);
             if (!data.hash) { throw '[Add] Informe qual \'hash\' você quer adicionar no mapeamento.'; }
 
@@ -108,7 +111,6 @@
                 if (Root) { throw '[Add] Não é possível adicionar mais de uma rota como root.' }
                 Root = true;
             }
-
 
             Routes.push(data.callBack ? { ...data } : { ...data, callBack });
         }
