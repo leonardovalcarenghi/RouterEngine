@@ -169,7 +169,7 @@
         hash = this._trimSlashes(hash);
         if (!hash) { throw '[NavigateTo] Informe para qual \'hash\' você quer redirecionar o usuário.'; }
         if (!this._routeExists(hash)) { throw '[NavigateTo] Não foi encontrado nenhuma rota mapeada usando essa hash.'; }
-        window.location.hash = path;
+        window.location.hash = hash;
         return this;
     };
 
