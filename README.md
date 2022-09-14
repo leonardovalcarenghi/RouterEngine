@@ -78,6 +78,8 @@ Para adicionar uma rota passando apenas um parâmetro:
 
 ````
 
+> ⚠ No _object_ de rota, você pode passar qualquer propriedade adicional conforme sua necessidade, para receber como argumento na função de _callBack_.
+
 
 <br/>
 
