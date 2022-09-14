@@ -210,10 +210,7 @@
     RouterEngine.prototype._routingMonitoring = async function () {
 
         const hash = this._getHash();
-        console.log('hash', hash)
-
         const routeExists = this._routeExists(hash);
-        console.log('routeExists', routeExists);
 
         // Caso a rota não exista:
         if (hash != '/' & !routeExists) {
@@ -328,7 +325,6 @@
     // Verificar se existe uma hash mapeada para roteamento:
     RouterEngine.prototype._routeExists = function (hash) {
         const route = this._getRoute(hash);
-
         return route ? true : false;
     };
 
