@@ -61,6 +61,14 @@
             Root = true;
             Routes.push({ root: true, hash: '/', callBack });
             return this;
+        },
+        get: function () {
+            if (Root) {
+                const root = Routes.find(x => x.root == true);
+                return root;
+            } else {
+                return null;
+            }
         }
     });
 
@@ -202,7 +210,10 @@
     RouterEngine.prototype._routingMonitoring = async function () {
 
         const hash = this._getHash();
+        console.log('hash', hash)
+
         const routeExists = this._routeExists(hash);
+        console.log('routeExists', routeExists);
 
         // Caso a rota não exista:
         if (hash != '/' & !routeExists) {
@@ -210,7 +221,10 @@
             return;
         }
 
-        if (hash == '/' && !Root) { console.warn("Não foi definido um root para o roteamento."); }
+        if (hash == '/' && !Root) {
+            console.warn("Não foi definido um root para o roteamento.");
+            return;
+        }
 
         this._setTitle(hash);
         this._callOnChangeCallBack(hash);
@@ -228,7 +242,9 @@
 
     // Obter rota:
     RouterEngine.prototype._getRoute = function (hash) {
-        const route = Routes.find(ROUTE => ROUTE.hash == hash);
+        const route = hash == '/' && Root == true ?
+            Routes.find(ROUTE => ROUTE.root == true) :
+            Routes.find(ROUTE => ROUTE.hash == hash);
         return route || null;
     };
 
@@ -312,6 +328,7 @@
     // Verificar se existe uma hash mapeada para roteamento:
     RouterEngine.prototype._routeExists = function (hash) {
         const route = this._getRoute(hash);
+
         return route ? true : false;
     };
 
